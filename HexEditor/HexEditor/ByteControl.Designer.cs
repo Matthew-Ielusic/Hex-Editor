@@ -34,10 +34,10 @@
             // dataLabel
             // 
             this.dataLabel.AutoSize = true;
-            this.dataLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dataLabel.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dataLabel.Location = new System.Drawing.Point(0, 0);
             this.dataLabel.Name = "dataLabel";
-            this.dataLabel.Size = new System.Drawing.Size(36, 26);
+            this.dataLabel.Size = new System.Drawing.Size(34, 22);
             this.dataLabel.TabIndex = 0;
             this.dataLabel.Text = "__";
             this.dataLabel.Click += new System.EventHandler(this.dataLabel_Click);

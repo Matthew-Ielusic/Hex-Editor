@@ -56,7 +56,6 @@
             this.button2.Text = "Reset";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
-            this.button2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.button2_KeyPress);
             // 
             // dataPanel
             // 
@@ -64,11 +63,12 @@
             this.dataPanel.BackColor = System.Drawing.SystemColors.ControlDark;
             this.dataPanel.Location = new System.Drawing.Point(230, 23);
             this.dataPanel.Name = "dataPanel";
-            this.dataPanel.Size = new System.Drawing.Size(513, 415);
+            this.dataPanel.Size = new System.Drawing.Size(554, 415);
             this.dataPanel.TabIndex = 1;
             // 
             // button3
             // 
+            this.button3.Enabled = false;
             this.button3.Location = new System.Drawing.Point(51, 223);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(83, 46);
@@ -102,9 +102,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(810, 450);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.dataPanel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "MainWindow";
             this.Text = "Form1";
             this.groupBox1.ResumeLayout(false);
