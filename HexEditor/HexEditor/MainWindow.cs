@@ -18,11 +18,9 @@ namespace HexEditor
         public MainWindow()
         {
             InitializeComponent();
-
-            button2_Click(null, null);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void openButton_Click(object sender, EventArgs e)
         {
             using (var dialog = new OpenFileDialog())
             {
@@ -30,31 +28,38 @@ namespace HexEditor
                 {
                     string fileName = dialog.FileName;
                     LoadFile(fileName);
+                    saveButton.Enabled = true;
                 }
             }
         }
 
         private void LoadFile(string fileName)
         {
-            using (BinaryReader br = new BinaryReader(File.Open(fileName, FileMode.Open)))
+            using (FileStream fs = File.Open(fileName, FileMode.Open))
+            using (BinaryReader br = new BinaryReader(fs))
             {
-                int bytesToRead = 100;
-                var data = br.ReadBytes(bytesToRead);
+                var data = br.ReadBytes((int)fs.Length);
                 DataLoader.LoadData(dataPanel, data);
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void resetButton_Click(object sender, EventArgs e)
         {
-            const string name = "C:\\Users\\Matt\\Documents\\0_MyActualDocuments\\Programming\\data.txt";
-
-            LoadFile(name);
+            dataPanel.Controls.Clear();
+            saveButton.Enabled = false;
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void saveButton_Click(object sender, EventArgs e)
         {
-            byte[] data = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf };
-            DataLoader.LoadData(dataPanel, data);
+            var dialog = new SaveFileDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                var bytesQuery = from Control ctrl in dataPanel.Controls select ((ByteControl)ctrl).Data;
+                byte[] data = bytesQuery.ToArray();
+                System.IO.File.WriteAllBytes(dialog.FileName, data);
+            }
+
+
         }
     }
 }
