@@ -40,6 +40,7 @@ namespace HexEditor
             {
                 var data = br.ReadBytes((int)fs.Length);
                 DataLoader.LoadData(dataPanel, data);
+                byteDataPanel1.SetBytes(data);
             }
         }
 

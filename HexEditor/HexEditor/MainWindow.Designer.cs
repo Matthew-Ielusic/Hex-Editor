@@ -28,11 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.openButton = new System.Windows.Forms.Button();
             this.resetButton = new System.Windows.Forms.Button();
             this.dataPanel = new System.Windows.Forms.Panel();
             this.saveButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.byteDataPanel1 = new HexEditor.ByteDataPanel();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -89,11 +93,41 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Controls";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(587, 462);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(166, 17);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "(Original Implementation)";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(1040, 465);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(198, 17);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "(Experimental Implementation)";
+            // 
+            // byteDataPanel1
+            // 
+            this.byteDataPanel1.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.byteDataPanel1.Bytes = ((System.Collections.Generic.List<byte>)(resources.GetObject("byteDataPanel1.Bytes")));
+            this.byteDataPanel1.Location = new System.Drawing.Point(890, 23);
+            this.byteDataPanel1.Name = "byteDataPanel1";
+            this.byteDataPanel1.Size = new System.Drawing.Size(578, 415);
+            this.byteDataPanel1.TabIndex = 2;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(829, 450);
+            this.ClientSize = new System.Drawing.Size(1489, 491);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.byteDataPanel1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.dataPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -101,6 +135,7 @@
             this.Text = "Form1";
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -111,6 +146,9 @@
         private System.Windows.Forms.Panel dataPanel;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.GroupBox groupBox1;
+        private ByteDataPanel byteDataPanel1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }
 
