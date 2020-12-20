@@ -33,9 +33,10 @@
             // 
             // verticalScroll
             // 
-            this.verticalScroll.Location = new System.Drawing.Point(549, 0);
+            this.verticalScroll.Dock = System.Windows.Forms.DockStyle.Right;
+            this.verticalScroll.Location = new System.Drawing.Point(648, 0);
             this.verticalScroll.Name = "verticalScroll";
-            this.verticalScroll.Size = new System.Drawing.Size(29, 415);
+            this.verticalScroll.Size = new System.Drawing.Size(17, 415);
             this.verticalScroll.TabIndex = 0;
             this.verticalScroll.ValueChanged += new System.EventHandler(this.verticalScroll_ValueChanged);
             // 
@@ -46,7 +47,7 @@
             this.BackColor = System.Drawing.SystemColors.ControlDark;
             this.Controls.Add(this.verticalScroll);
             this.Name = "ByteDataPanel";
-            this.Size = new System.Drawing.Size(578, 415);
+            this.Size = new System.Drawing.Size(665, 415);
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ByteDataPanel_Scroll);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.ByteDataPanel_Paint);
             this.ResumeLayout(false);

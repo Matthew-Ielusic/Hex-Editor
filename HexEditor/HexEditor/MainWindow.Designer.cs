@@ -115,24 +115,24 @@
             // 
             this.byteDataPanel1.BackColor = System.Drawing.SystemColors.ControlDark;
             this.byteDataPanel1.Bytes = ((System.Collections.Generic.List<byte>)(resources.GetObject("byteDataPanel1.Bytes")));
-            this.byteDataPanel1.Location = new System.Drawing.Point(890, 23);
+            this.byteDataPanel1.Location = new System.Drawing.Point(835, 23);
             this.byteDataPanel1.Name = "byteDataPanel1";
-            this.byteDataPanel1.Size = new System.Drawing.Size(578, 415);
-            this.byteDataPanel1.TabIndex = 2;
+            this.byteDataPanel1.Size = new System.Drawing.Size(650, 415);
+            this.byteDataPanel1.TabIndex = 5;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1489, 491);
+            this.ClientSize = new System.Drawing.Size(1900, 491);
+            this.Controls.Add(this.byteDataPanel1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.byteDataPanel1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.dataPanel);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "MainWindow";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.MainWindow_Load);
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -146,9 +146,9 @@
         private System.Windows.Forms.Panel dataPanel;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.GroupBox groupBox1;
-        private ByteDataPanel byteDataPanel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private ByteDataPanel byteDataPanel1;
     }
 }
 
