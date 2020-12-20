@@ -16,7 +16,6 @@ namespace HexEditor
 
         private Font font = new Font(FontFamily.GenericMonospace, FONT_SIZE); // TODO: Dispose of `font` when this object is slated to be disposed of
 
-
         private List<byte> _bytes;
         public List<byte> Bytes
         {
@@ -31,14 +30,14 @@ namespace HexEditor
                 Invalidate();
             }
         }
-        const double BYTES_PER_LINE = 16;
+        private const int BYTES_PER_LINE = 16;
 
         private void RecalculateVerticalScroll()
         {
-            int numberOfLines = (int)(Math.Ceiling(Bytes.Count / BYTES_PER_LINE));
-            int difference = Math.Max(0, numberOfLines - CompletelyDisplayedLines);
-            verticalScroll.Maximum = difference;
-            verticalScroll.Enabled = difference > 0;
+            int totalRenderHeight = LineCount * font.Height;
+            verticalScroll.Maximum = Math.Max(0, totalRenderHeight - Size.Height + font.Height);
+            verticalScroll.Enabled = verticalScroll.Maximum > 0;
+            verticalScroll.Value = 0;
         }
 
         private int CompletelyDisplayedLines
@@ -46,7 +45,7 @@ namespace HexEditor
             get { return Size.Height / font.Height; }
         }
 
-        public int LineCount
+        private int LineCount
         {
             get
             {
@@ -61,7 +60,7 @@ namespace HexEditor
                 }
             }
         }
-
+        
         public ByteDataPanel()
         {
             InitializeComponent();
@@ -83,20 +82,19 @@ namespace HexEditor
         {
             const int spacing = 0;
             int x = 0;
-            int y = -(verticalScroll.Value * font.Height);
-            int tabIndex = 1;
+            int y = -verticalScroll.Value;
 
-            int byteWidth = (int)(font.Size * 2); // Size seems to be slightly larger than the size of a single character (even for this monospaced font)
-            foreach (var b in Bytes)
+            for (int i = 0; i < LineCount; i++)
             {
-                e.Graphics.DrawString(b.ToString("x2"), font, Brushes.Black, x, y);
-
-                x += byteWidth;
-                if (x + byteWidth + verticalScroll.Width > Size.Width)
+                int startIndex = i * BYTES_PER_LINE;
+                int endIndex = startIndex + BYTES_PER_LINE - 1;
                 {
-                    x = 0;
+                    var lineData = Bytes.Skip(startIndex).Take(BYTES_PER_LINE);
+                    string lineView = lineData.Select(b => b.ToString("x2"))
+                                              .Aggregate((a, b) => a + " " + b);
+                    e.Graphics.DrawString(lineView, font, Brushes.Black, 0, y);
                     y += font.Height;
-                }
+                } 
             }
         }
 
