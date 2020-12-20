@@ -81,20 +81,23 @@ namespace HexEditor
         private void ByteDataPanel_Paint(object sender, PaintEventArgs e)
         {
             const int spacing = 0;
-            int x = 0;
-            int y = -verticalScroll.Value;
 
-            for (int i = 0; i < LineCount; i++)
+            int startingLine = (int)Math.Ceiling( (double)verticalScroll.Value / font.Height ) - 1;
+            // IE, startingLine is the smallest int `i` such that (i * font.Height) + font.Height >= Value
+            int endingLine = startingLine + (int)Math.Ceiling( (double)Size.Height / font.Height );
+            // IE, endingLine is startingLine plus the largest int `j` such that `j` lines of data fit in the control
+            endingLine = Math.Min(endingLine, LineCount - 1); // Friggin' off-by-one errors related to lines being implicitly zero-indexed
+
+            for (int i = startingLine; i <= endingLine; i++)
             {
                 int startIndex = i * BYTES_PER_LINE;
                 int endIndex = startIndex + BYTES_PER_LINE - 1;
-                {
-                    var lineData = Bytes.Skip(startIndex).Take(BYTES_PER_LINE);
-                    string lineView = lineData.Select(b => b.ToString("x2"))
-                                              .Aggregate((a, b) => a + " " + b);
-                    e.Graphics.DrawString(lineView, font, Brushes.Black, 0, y);
-                    y += font.Height;
-                } 
+                int drawX = 0;
+                int drawY = (i * font.Height) - verticalScroll.Value;
+                var lineData = Bytes.Skip(startIndex).Take(BYTES_PER_LINE);
+                string lineView = lineData.Select(b => b.ToString("x2"))
+                                            .Aggregate((a, b) => a + " " + b);
+                e.Graphics.DrawString(lineView, font, Brushes.Black, drawX, drawY);
             }
         }
 
