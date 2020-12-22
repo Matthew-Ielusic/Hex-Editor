@@ -52,6 +52,8 @@
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ByteDataPanel_Scroll);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.ByteDataPanel_Paint);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ByteDataPanel_MouseClick);
+            this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.ByteDataPanel_MouseWheel);
+
             this.ResumeLayout(false);
 
         }

@@ -126,6 +126,22 @@ namespace HexEditor
             InitializeComponent();
         }
 
+        private void ByteDataPanel_MouseWheel(object sender, MouseEventArgs e)
+        {
+            int delta = e.Delta;
+            int deltaThreshold = SystemInformation.MouseWheelScrollDelta;
+            int direction = (delta > 0) ? 1 : -1;
+            while (delta * direction > deltaThreshold)
+            {
+                delta -= direction * deltaThreshold;
+                int newScroll = verticalScroll.Value - (SystemInformation.MouseWheelScrollLines * direction);
+                newScroll = Math.Max(verticalScroll.Minimum, Math.Min(verticalScroll.Maximum, newScroll));
+                // Clamp newScroll to be be between the Minimum and Maximum vertical scrolls
+                // (VScrollBar throws an exception if an out-of-range value is passed to its Value property
+                verticalScroll.Value = newScroll;
+            }
+        }
+
         public void SetBytes(byte[] newData)
         {
             Bytes = new List<byte>(newData);
@@ -138,8 +154,6 @@ namespace HexEditor
 
         private void ByteDataPanel_Paint(object sender, PaintEventArgs e)
         {
-            const int spacing = 0;
-
             int startingLine = (int)Math.Ceiling( (double)verticalScroll.Value / ByteHeight ) - 1;
             // IE, startingLine is the smallest int `i` such that (i * ByteHeight) + ByteHeight >= Value
             int endingLine = startingLine + (int)Math.Ceiling( (double)Size.Height / ByteHeight );
