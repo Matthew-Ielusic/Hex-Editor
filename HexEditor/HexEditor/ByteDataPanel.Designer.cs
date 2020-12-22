@@ -51,9 +51,11 @@
             this.Size = new System.Drawing.Size(665, 415);
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ByteDataPanel_Scroll);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.ByteDataPanel_Paint);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ByteDataPanel_KeyDown);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ByteDataPanel_KeyPress);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ByteDataPanel_MouseClick);
             this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.ByteDataPanel_MouseWheel);
+            this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.ByteDataPanel_PreviewKeyDown);
             this.ResumeLayout(false);
 
         }

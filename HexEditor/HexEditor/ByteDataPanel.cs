@@ -19,7 +19,7 @@ namespace HexEditor
         private const double COURIER_NEW_ASPECT_RATIO = .42;
         private const int BYTE_SPACING = 10;
         private Font font = new Font(new FontFamily("Courier New"), FONT_SIZE, GraphicsUnit.Pixel); // TODO: Dispose of `font` when this object is slated to be disposed of
-        
+
         private int ByteHeight
         {
             get { return font.Height; }
@@ -117,10 +117,43 @@ namespace HexEditor
                 }
             }
         }
-        
+
+        private Dictionary<Keys, Action> inputKeyBehavior;
         public ByteDataPanel()
         {
             InitializeComponent();
+
+            this.inputKeyBehavior = new Dictionary<Keys, Action>()
+                {
+                    [Keys.Right] = IncrementSelectedColumn,
+                    [Keys.Left]  = DecrementSelectedColumn,
+                    [Keys.Up]    = IncrementSelectedRow,
+                    [Keys.Down]  = DecrementSelectedRow
+                };
+        }
+
+        private void DecrementSelectedColumn()
+        {
+            if (SelectedIndex > 0)
+                SelectedIndex--;
+        }
+
+        private void IncrementSelectedColumn()
+        {
+            if (SelectedIndex < Bytes.Count)
+                SelectedIndex++;
+        }
+
+        private void DecrementSelectedRow()
+        {
+            if (SelectedIndex >= BYTES_PER_LINE)
+                SelectedIndex -= BYTES_PER_LINE;
+        }
+
+        private void IncrementSelectedRow()
+        {
+            if (SelectedIndex + BYTES_PER_LINE < Bytes.Count)
+                SelectedIndex += BYTES_PER_LINE;
         }
 
         private void ByteDataPanel_MouseWheel(object sender, MouseEventArgs e)
@@ -214,14 +247,6 @@ namespace HexEditor
             // (I leave deriving that inequality as an exercise for the reader.)
         }
 
-        public void IncrementSelectedIndex()
-        {
-            if (SelectedIndex.HasValue && SelectedIndex < Bytes.Count)
-            {
-                SelectedIndex++;
-            }
-        }
-
         public void DecrementSelectedIndex()
         {
             if (SelectedIndex.HasValue && SelectedIndex > 0)
@@ -249,6 +274,7 @@ namespace HexEditor
                 if (nibbleValue.HasValue)
                 {
                     SetCurrentNibble(nibbleValue.Value);
+                    e.Handled = true;
                 }
             }
         }
@@ -262,6 +288,19 @@ namespace HexEditor
             Bytes[SelectedIndex.Value] = (byte)( (Bytes[SelectedIndex.Value] & dataMask) | (value << shiftAmount) );
             selectedNibble = 4 - selectedNibble;
             Invalidate();
+        }
+
+        private void ByteDataPanel_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (inputKeyBehavior.TryGetValue(e.KeyCode, out Action action))
+            {
+                action.Invoke();
+            }
+        }
+
+        private void ByteDataPanel_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            e.IsInputKey = inputKeyBehavior.ContainsKey(e.KeyCode);
         }
     }
 }
