@@ -17,7 +17,6 @@ namespace HexEditor
         private static readonly Brush SELECTED_BACKGROUND = Brushes.White;
 
         private const double COURIER_NEW_ASPECT_RATIO = .42;
-        private int BYTE_DRAW_WIDTH { get { return (int)(2 * font.Size * (1 - COURIER_NEW_ASPECT_RATIO)); } }
         private const int BYTE_SPACING = 10;
         private Font font = new Font(new FontFamily("Courier New"), FONT_SIZE, GraphicsUnit.Pixel); // TODO: Dispose of `font` when this object is slated to be disposed of
         
@@ -25,16 +24,11 @@ namespace HexEditor
         {
             get { return font.Height; }
         }
-        private int ByteWidth
-        {
-            get 
-            {
-                return -1 + (int)font.Size * 3 * 5 / 8; 
-            }
-            // Trial-and-error has shown that the font's width is five-eighths of the font height.
-            // Multiply that by 3 because each byte is displayed by three characters -- one for each nibble and then a space between bytes
-            // And then throw in a fudge factor.  Because "what is the width, in pixels, of a character of this monospace font" apparently has no answer.
+        private int ByteWidth 
+        { 
+            get { return (int)(2 * font.Size * (1 - COURIER_NEW_ASPECT_RATIO)); } 
         }
+
 
         private int? _selectedIndex;
         private int? SelectedIndex
@@ -45,6 +39,7 @@ namespace HexEditor
                 if (!value.HasValue || (0 <= value && value <= Bytes.Count))
                 {
                     _selectedIndex = value;
+                    selectedNibble = 4 | (value & 0); // Set selectedNibble to null if value is null; else set it to 4
                     Invalidate();
                 }
                 else
@@ -83,6 +78,8 @@ namespace HexEditor
                 }
             }
         }
+
+        private int? selectedNibble;
 
         private List<byte> _bytes = new List<byte>();
         public List<byte> Bytes
@@ -131,7 +128,7 @@ namespace HexEditor
             int delta = e.Delta;
             int deltaThreshold = SystemInformation.MouseWheelScrollDelta;
             int direction = (delta > 0) ? 1 : -1;
-            while (delta * direction > deltaThreshold)
+            while (delta * direction >= deltaThreshold)
             {
                 delta -= direction * deltaThreshold;
                 int newScroll = verticalScroll.Value - (SystemInformation.MouseWheelScrollLines * direction);
@@ -163,10 +160,10 @@ namespace HexEditor
             if (SelectedIndex.HasValue)
             {
                 const int FUDGE_FACTOR = 3;
-                int drawX = SelectedColumn.Value * (BYTE_DRAW_WIDTH + BYTE_SPACING) + FUDGE_FACTOR;
+                int drawX = SelectedColumn.Value * (ByteWidth + BYTE_SPACING) + FUDGE_FACTOR;
                 int drawY = (SelectedLine.Value * ByteHeight) - verticalScroll.Value;
                 Point start = new Point(drawX, drawY);
-                Rectangle background = new Rectangle(start, new Size(BYTE_DRAW_WIDTH + FUDGE_FACTOR, ByteHeight));
+                Rectangle background = new Rectangle(start, new Size(ByteWidth + FUDGE_FACTOR, ByteHeight));
 
                 e.Graphics.FillRectangle(SELECTED_BACKGROUND, background);
             }
@@ -181,7 +178,7 @@ namespace HexEditor
                 foreach (byte b in lineData)
                 {
                     e.Graphics.DrawString(b.ToString("x2"), font, TEXT_BRUSH, drawX, drawY);
-                    drawX += BYTE_DRAW_WIDTH + BYTE_SPACING;
+                    drawX += ByteWidth + BYTE_SPACING;
                 }
             }
         }
@@ -193,9 +190,9 @@ namespace HexEditor
 
         private void ByteDataPanel_MouseClick(object sender, MouseEventArgs e)
         {
-            int lineIndex = (e.Y - verticalScroll.Value) / ByteHeight;
+            int lineIndex = (e.Y + verticalScroll.Value) / ByteHeight;
 
-            int w = BYTE_DRAW_WIDTH;
+            int w = ByteWidth;
             int s = BYTE_SPACING;
             int k = (int)Math.Ceiling((double)(e.X - w) / (s + w));
             if (k <= e.X / (double)(w + s))
@@ -231,6 +228,40 @@ namespace HexEditor
             {
                 SelectedIndex--;
             }
+        }
+
+        private void ByteDataPanel_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (selectedNibble.HasValue)
+            {
+                char keyChar = Char.ToLower(e.KeyChar);
+
+                int? nibbleValue = null;
+                if (Char.IsNumber(keyChar))
+                {
+                    nibbleValue = keyChar - '0';
+                }
+                else if ('a' <= keyChar && keyChar <= 'f')
+                {
+                    nibbleValue = keyChar - 'a' + 0xa;
+                }
+
+                if (nibbleValue.HasValue)
+                {
+                    SetCurrentNibble(nibbleValue.Value);
+                }
+            }
+        }
+
+        private void SetCurrentNibble(int value)
+        {
+            int shiftAmount = selectedNibble.Value;
+            int dataMask = 0xf << (4 - shiftAmount);
+
+
+            Bytes[SelectedIndex.Value] = (byte)( (Bytes[SelectedIndex.Value] & dataMask) | (value << shiftAmount) );
+            selectedNibble = 4 - selectedNibble;
+            Invalidate();
         }
     }
 }
