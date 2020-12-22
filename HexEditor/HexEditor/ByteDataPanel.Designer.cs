@@ -46,10 +46,12 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
             this.Controls.Add(this.verticalScroll);
+            this.DoubleBuffered = true;
             this.Name = "ByteDataPanel";
             this.Size = new System.Drawing.Size(665, 415);
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ByteDataPanel_Scroll);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.ByteDataPanel_Paint);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ByteDataPanel_MouseClick);
             this.ResumeLayout(false);
 
         }
