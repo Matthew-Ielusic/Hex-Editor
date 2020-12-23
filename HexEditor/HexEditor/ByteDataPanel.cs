@@ -40,11 +40,29 @@ namespace HexEditor
                 {
                     _selectedIndex = value;
                     selectedNibble = 4 | (value & 0); // Set selectedNibble to null if value is null; else set it to 4
+                    EnsureSelectedIsVisible();
                     Invalidate();
                 }
                 else
                 {
                     throw new IndexOutOfRangeException();
+                }
+            }
+        }
+
+        private void EnsureSelectedIsVisible()
+        {
+            if (SelectedIndex.HasValue)
+            {
+                int minVisibleLine = (int)Math.Ceiling((double)verticalScroll.Value / ByteHeight);
+                int maxVisibleLine = -1 + (int)Math.Floor((double)(verticalScroll.Value + Size.Height) / ByteHeight);
+                if (SelectedLine < minVisibleLine)
+                {
+                    verticalScroll.Value = ByteHeight * SelectedLine.Value;
+                }
+                else if (SelectedLine > maxVisibleLine)
+                {
+                    verticalScroll.Value = Math.Max(0, ByteHeight * (SelectedLine.Value + 1) - Size.Height);
                 }
             }
         }
@@ -127,8 +145,8 @@ namespace HexEditor
                 {
                     [Keys.Right] = IncrementSelectedColumn,
                     [Keys.Left]  = DecrementSelectedColumn,
-                    [Keys.Up]    = IncrementSelectedRow,
-                    [Keys.Down]  = DecrementSelectedRow
+                    [Keys.Up]    = DecrementSelectedRow,
+                    [Keys.Down]  = IncrementSelectedRow
                 };
         }
 

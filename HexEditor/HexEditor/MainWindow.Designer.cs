@@ -117,7 +117,7 @@
             this.byteDataPanel1.Bytes = ((System.Collections.Generic.List<byte>)(resources.GetObject("byteDataPanel1.Bytes")));
             this.byteDataPanel1.Location = new System.Drawing.Point(835, 23);
             this.byteDataPanel1.Name = "byteDataPanel1";
-            this.byteDataPanel1.Size = new System.Drawing.Size(650, 415);
+            this.byteDataPanel1.Size = new System.Drawing.Size(650, 420);
             this.byteDataPanel1.TabIndex = 5;
             // 
             // MainWindow
