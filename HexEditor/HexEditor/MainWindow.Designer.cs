@@ -28,11 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.openButton = new System.Windows.Forms.Button();
             this.resetButton = new System.Windows.Forms.Button();
-            this.dataPanel = new System.Windows.Forms.Panel();
             this.saveButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.byteDataPanel = new HexEditor.ByteDataPanel();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,16 +56,6 @@
             this.resetButton.Text = "Reset";
             this.resetButton.UseVisualStyleBackColor = true;
             this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
-            // 
-            // dataPanel
-            // 
-            this.dataPanel.AutoScroll = true;
-            this.dataPanel.AutoScrollMinSize = new System.Drawing.Size(0, 416);
-            this.dataPanel.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.dataPanel.Location = new System.Drawing.Point(230, 23);
-            this.dataPanel.Name = "dataPanel";
-            this.dataPanel.Size = new System.Drawing.Size(578, 415);
-            this.dataPanel.TabIndex = 1;
             // 
             // saveButton
             // 
@@ -89,16 +80,24 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Controls";
             // 
+            // byteDataPanel1
+            // 
+            this.byteDataPanel.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.byteDataPanel.Location = new System.Drawing.Point(230, 23);
+            this.byteDataPanel.Name = "byteDataPanel1";
+            this.byteDataPanel.Size = new System.Drawing.Size(650, 420);
+            this.byteDataPanel.TabIndex = 5;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(829, 450);
+            this.ClientSize = new System.Drawing.Size(930, 491);
+            this.Controls.Add(this.byteDataPanel);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.dataPanel);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "MainWindow";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.MainWindow_Load);
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -108,9 +107,9 @@
 
         private System.Windows.Forms.Button openButton;
         private System.Windows.Forms.Button resetButton;
-        private System.Windows.Forms.Panel dataPanel;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.GroupBox groupBox1;
+        private ByteDataPanel byteDataPanel;
     }
 }
 
