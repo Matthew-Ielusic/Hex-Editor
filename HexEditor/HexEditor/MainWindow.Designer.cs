@@ -31,12 +31,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.openButton = new System.Windows.Forms.Button();
             this.resetButton = new System.Windows.Forms.Button();
-            this.dataPanel = new System.Windows.Forms.Panel();
             this.saveButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.byteDataPanel1 = new HexEditor.ByteDataPanel();
+            this.byteDataPanel = new HexEditor.ByteDataPanel();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -59,16 +56,6 @@
             this.resetButton.Text = "Reset";
             this.resetButton.UseVisualStyleBackColor = true;
             this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
-            // 
-            // dataPanel
-            // 
-            this.dataPanel.AutoScroll = true;
-            this.dataPanel.AutoScrollMinSize = new System.Drawing.Size(0, 416);
-            this.dataPanel.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.dataPanel.Location = new System.Drawing.Point(230, 23);
-            this.dataPanel.Name = "dataPanel";
-            this.dataPanel.Size = new System.Drawing.Size(578, 415);
-            this.dataPanel.TabIndex = 1;
             // 
             // saveButton
             // 
@@ -93,49 +80,26 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Controls";
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(587, 462);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(166, 17);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "(Original Implementation)";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1040, 465);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(198, 17);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "(Experimental Implementation)";
-            // 
             // byteDataPanel1
             // 
-            this.byteDataPanel1.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.byteDataPanel1.Bytes = ((System.Collections.Generic.List<byte>)(resources.GetObject("byteDataPanel1.Bytes")));
-            this.byteDataPanel1.Location = new System.Drawing.Point(835, 23);
-            this.byteDataPanel1.Name = "byteDataPanel1";
-            this.byteDataPanel1.Size = new System.Drawing.Size(650, 420);
-            this.byteDataPanel1.TabIndex = 5;
+            this.byteDataPanel.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.byteDataPanel.Location = new System.Drawing.Point(230, 23);
+            this.byteDataPanel.Name = "byteDataPanel1";
+            this.byteDataPanel.Size = new System.Drawing.Size(650, 420);
+            this.byteDataPanel.TabIndex = 5;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1900, 491);
-            this.Controls.Add(this.byteDataPanel1);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(930, 491);
+            this.Controls.Add(this.byteDataPanel);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.dataPanel);
             this.Name = "MainWindow";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -143,12 +107,9 @@
 
         private System.Windows.Forms.Button openButton;
         private System.Windows.Forms.Button resetButton;
-        private System.Windows.Forms.Panel dataPanel;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private ByteDataPanel byteDataPanel1;
+        private ByteDataPanel byteDataPanel;
     }
 }
 

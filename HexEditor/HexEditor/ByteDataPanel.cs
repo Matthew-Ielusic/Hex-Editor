@@ -12,31 +12,41 @@ namespace HexEditor
 {
     public partial class ByteDataPanel : UserControl
     {
+        /* Class Constants */
+        private const int BYTES_PER_LINE = 16;
         private const int FONT_SIZE = 16;
         private static readonly Brush TEXT_BRUSH = Brushes.Black;
         private static readonly Brush SELECTED_BACKGROUND = Brushes.White;
 
         private const double COURIER_NEW_ASPECT_RATIO = .42;
         private const int BYTE_SPACING = 10;
-        private Font font = new Font(new FontFamily("Courier New"), FONT_SIZE, GraphicsUnit.Pixel); // TODO: Dispose of `font` when this object is slated to be disposed of
+        private static readonly Font font = new Font(new FontFamily("Courier New"), FONT_SIZE, GraphicsUnit.Pixel); // TODO: Dispose of `font` when this object is slated to be disposed of
 
-        private int ByteHeight
+        /* End Class Constants */
+
+        /* Instance Fields */
+
+        private int? selectedNibble = null;
+
+        private List<byte> _data = new List<byte>();
+        private List<byte> Data
         {
-            get { return font.Height; }
-        }
-        private int ByteWidth 
-        { 
-            get { return (int)(2 * font.Size * (1 - COURIER_NEW_ASPECT_RATIO)); } 
+            get { return _data; }
+            set
+            {
+                _data = value ?? new List<byte>();
+                RecalculateVerticalScroll();
+                Invalidate();
+            }
         }
 
-
-        private int? _selectedIndex;
+        private int? _selectedIndex = null;
         private int? SelectedIndex
         {
             get { return _selectedIndex; }
             set
             {
-                if (!value.HasValue || (0 <= value && value <= Bytes.Count))
+                if (!value.HasValue || (0 <= value && value <= Data.Count))
                 {
                     _selectedIndex = value;
                     selectedNibble = 4 | (value & 0); // Set selectedNibble to null if value is null; else set it to 4
@@ -50,35 +60,16 @@ namespace HexEditor
             }
         }
 
-        private void EnsureSelectedIsVisible()
-        {
-            if (SelectedIndex.HasValue)
-            {
-                int minVisibleLine = (int)Math.Ceiling((double)verticalScroll.Value / ByteHeight);
-                int maxVisibleLine = -1 + (int)Math.Floor((double)(verticalScroll.Value + Size.Height) / ByteHeight);
-                if (SelectedLine < minVisibleLine)
-                {
-                    verticalScroll.Value = ByteHeight * SelectedLine.Value;
-                }
-                else if (SelectedLine > maxVisibleLine)
-                {
-                    verticalScroll.Value = Math.Max(0, ByteHeight * (SelectedLine.Value + 1) - Size.Height);
-                }
-            }
-        }
+        private Dictionary<Keys, Action> inputKeyBehavior; // Initialized in the constructor
 
+        /* End Instance Fields */
+
+        /* Helper Derived Properties */
         private int? SelectedLine
         {
             get
             {
-                if (SelectedIndex.HasValue)
-                {
-                    return SelectedIndex / BYTES_PER_LINE;
-                }
-                else
-                {
-                    return null;
-                }
+                return SelectedIndex / BYTES_PER_LINE;
             }
         }
 
@@ -86,93 +77,64 @@ namespace HexEditor
         {
             get
             {
-                if (SelectedIndex.HasValue)
-                {
-                    return SelectedIndex % BYTES_PER_LINE;
-                }
-                else
-                {
-                    return null;
-                }
+                return SelectedIndex % BYTES_PER_LINE;
             }
-        }
-
-        private int? selectedNibble;
-
-        private List<byte> _bytes = new List<byte>();
-        public List<byte> Bytes
-        {
-            get { return _bytes; }
-            set
-            {
-                _bytes = value ?? new List<byte>();
-                RecalculateVerticalScroll();
-                Invalidate();
-            }
-        }
-        private const int BYTES_PER_LINE = 16;
-
-        private void RecalculateVerticalScroll()
-        {
-            int totalRenderHeight = LineCount * ByteHeight;
-            verticalScroll.Maximum = Math.Max(0, totalRenderHeight - Size.Height + ByteHeight);
-            verticalScroll.Enabled = verticalScroll.Maximum > 0;
-            verticalScroll.Value = 0;
         }
 
         private int LineCount
         {
             get
             {
-                double quotient = (double)Bytes.Count / BYTES_PER_LINE;
+                double quotient = (double)Data.Count / BYTES_PER_LINE;
                 if (quotient > Math.Floor(quotient))
                 {
-                    return 1 + (int)quotient;
+                    return 1 + (int)Math.Floor(quotient);
                 }
                 else
                 {
-                    return (int)quotient;
+                    return (int)Math.Floor(quotient);
                 }
             }
         }
 
-        private Dictionary<Keys, Action> inputKeyBehavior;
+        private int ByteHeight
+        {
+            get { return font.Height; }
+        }
+        private int ByteWidth
+        {
+            get { return (int)(2 * font.Size * (1 - COURIER_NEW_ASPECT_RATIO)); }
+        }
+
+        /* End Helper Derived Properties */
+
+        /* Public */
         public ByteDataPanel()
         {
             InitializeComponent();
 
             this.inputKeyBehavior = new Dictionary<Keys, Action>()
-                {
-                    [Keys.Right] = IncrementSelectedColumn,
-                    [Keys.Left]  = DecrementSelectedColumn,
-                    [Keys.Up]    = DecrementSelectedRow,
-                    [Keys.Down]  = IncrementSelectedRow
-                };
+            {
+                [Keys.Right] = IncrementSelectedColumn,
+                [Keys.Left] = DecrementSelectedColumn,
+                [Keys.Up] = DecrementSelectedRow,
+                [Keys.Down] = IncrementSelectedRow
+            };
         }
 
-        private void DecrementSelectedColumn()
+        public byte[] AssembleData()
         {
-            if (SelectedIndex > 0)
-                SelectedIndex--;
+            return Data.ToArray();
         }
 
-        private void IncrementSelectedColumn()
+        public void SetData(byte[] newData)
         {
-            if (SelectedIndex < Bytes.Count)
-                SelectedIndex++;
+            Data = new List<byte>(newData);
         }
 
-        private void DecrementSelectedRow()
-        {
-            if (SelectedIndex >= BYTES_PER_LINE)
-                SelectedIndex -= BYTES_PER_LINE;
-        }
+        /* End Public */
 
-        private void IncrementSelectedRow()
-        {
-            if (SelectedIndex + BYTES_PER_LINE < Bytes.Count)
-                SelectedIndex += BYTES_PER_LINE;
-        }
+        /* Event Handlers */
 
         private void ByteDataPanel_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -188,11 +150,6 @@ namespace HexEditor
                 // (VScrollBar throws an exception if an out-of-range value is passed to its Value property
                 verticalScroll.Value = newScroll;
             }
-        }
-
-        public void SetBytes(byte[] newData)
-        {
-            Bytes = new List<byte>(newData);
         }
 
         private void ByteDataPanel_Scroll(object sender, ScrollEventArgs e)
@@ -225,7 +182,7 @@ namespace HexEditor
                 int endIndex = startIndex + BYTES_PER_LINE - 1;
                 int drawX = 0;
                 int drawY = (i * ByteHeight) - verticalScroll.Value;
-                var lineData = Bytes.Skip(startIndex).Take(BYTES_PER_LINE);
+                var lineData = Data.Skip(startIndex).Take(BYTES_PER_LINE);
                 foreach (byte b in lineData)
                 {
                     e.Graphics.DrawString(b.ToString("x2"), font, TEXT_BRUSH, drawX, drawY);
@@ -265,13 +222,7 @@ namespace HexEditor
             // (I leave deriving that inequality as an exercise for the reader.)
         }
 
-        public void DecrementSelectedIndex()
-        {
-            if (SelectedIndex.HasValue && SelectedIndex > 0)
-            {
-                SelectedIndex--;
-            }
-        }
+
 
         private void ByteDataPanel_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -297,17 +248,6 @@ namespace HexEditor
             }
         }
 
-        private void SetCurrentNibble(int value)
-        {
-            int shiftAmount = selectedNibble.Value;
-            int dataMask = 0xf << (4 - shiftAmount);
-
-
-            Bytes[SelectedIndex.Value] = (byte)( (Bytes[SelectedIndex.Value] & dataMask) | (value << shiftAmount) );
-            selectedNibble = 4 - selectedNibble;
-            Invalidate();
-        }
-
         private void ByteDataPanel_KeyDown(object sender, KeyEventArgs e)
         {
             if (inputKeyBehavior.TryGetValue(e.KeyCode, out Action action))
@@ -320,5 +260,71 @@ namespace HexEditor
         {
             e.IsInputKey = inputKeyBehavior.ContainsKey(e.KeyCode);
         }
+
+        /* End Event Handlers */
+
+        /* Helper Methods */
+
+        private void SetCurrentNibble(int value)
+        {
+            int shiftAmount = selectedNibble.Value;
+            int dataMask = 0xf << (4 - shiftAmount);
+
+
+            Data[SelectedIndex.Value] = (byte)((Data[SelectedIndex.Value] & dataMask) | (value << shiftAmount));
+            selectedNibble = 4 - selectedNibble;
+            Invalidate();
+        }
+
+        private void EnsureSelectedIsVisible()
+        {
+            if (SelectedIndex.HasValue)
+            {
+                int minVisibleLine = (int)Math.Ceiling((double)verticalScroll.Value / ByteHeight);
+                int maxVisibleLine = -1 + (int)Math.Floor((double)(verticalScroll.Value + Size.Height) / ByteHeight);
+                if (SelectedLine < minVisibleLine)
+                {
+                    verticalScroll.Value = ByteHeight * SelectedLine.Value;
+                }
+                else if (SelectedLine > maxVisibleLine)
+                {
+                    verticalScroll.Value = Math.Max(0, ByteHeight * (SelectedLine.Value + 1) - Size.Height);
+                }
+            }
+        }
+
+        private void RecalculateVerticalScroll()
+        {
+            int totalRenderHeight = LineCount * ByteHeight;
+            verticalScroll.Maximum = Math.Max(0, totalRenderHeight - Size.Height + ByteHeight);
+            verticalScroll.Enabled = verticalScroll.Maximum > 0;
+            verticalScroll.Value = 0;
+        }
+
+        private void DecrementSelectedColumn()
+        {
+            if (SelectedIndex > 0)
+                SelectedIndex--;
+        }
+
+        private void IncrementSelectedColumn()
+        {
+            if (SelectedIndex < Data.Count)
+                SelectedIndex++;
+        }
+
+        private void DecrementSelectedRow()
+        {
+            if (SelectedIndex >= BYTES_PER_LINE)
+                SelectedIndex -= BYTES_PER_LINE;
+        }
+
+        private void IncrementSelectedRow()
+        {
+            if (SelectedIndex + BYTES_PER_LINE < Data.Count)
+                SelectedIndex += BYTES_PER_LINE;
+        }
+
+        /* End Helper Methods */
     }
 }
