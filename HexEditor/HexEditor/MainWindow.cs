@@ -13,8 +13,6 @@ namespace HexEditor
 {
     public partial class MainWindow : Form
     {
-        private ByteControl selectedControl = new ByteControl(0);
-
         public MainWindow()
         {
             InitializeComponent();
@@ -63,8 +61,9 @@ namespace HexEditor
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            // LoadTestData();
+            LoadTestData();
             // Uncomment when working on new features
+            // Comment out before deploying
         }
 
         private void LoadTestData()

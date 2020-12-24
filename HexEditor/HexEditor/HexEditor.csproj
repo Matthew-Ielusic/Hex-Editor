@@ -46,19 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ByteControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ByteControl.Designer.cs">
-      <DependentUpon>ByteControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="ByteDataPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ByteDataPanel.Designer.cs">
       <DependentUpon>ByteDataPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataLoader.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -67,9 +60,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ByteControl.resx">
-      <DependentUpon>ByteControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ByteDataPanel.resx">
       <DependentUpon>ByteDataPanel.cs</DependentUpon>
     </EmbeddedResource>
