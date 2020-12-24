@@ -26,7 +26,6 @@ namespace HexEditor
                 {
                     string fileName = dialog.FileName;
                     LoadFile(fileName);
-                    saveButton.Enabled = true;
                 }
             }
         }
@@ -44,7 +43,6 @@ namespace HexEditor
         private void resetButton_Click(object sender, EventArgs e)
         {
             byteDataPanel.SetData(null);
-            saveButton.Enabled = false;
         }
 
         private void saveButton_Click(object sender, EventArgs e)
@@ -55,13 +53,11 @@ namespace HexEditor
                 byte[] data = byteDataPanel.AssembleData();
                 System.IO.File.WriteAllBytes(dialog.FileName, data);
             }
-
-
         }
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            LoadTestData();
+            //LoadTestData();
             // Uncomment when working on new features
             // Comment out before deploying
         }

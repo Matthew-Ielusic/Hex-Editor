@@ -46,7 +46,7 @@ namespace HexEditor
             get { return _selectedIndex; }
             set
             {
-                if (!value.HasValue || (0 <= value && value <= Data.Count))
+                if (!value.HasValue || (0 <= value && value <= (Data.Count + 1)))
                 {
                     _selectedIndex = value;
                     selectedNibble = 4 | (value & 0); // Set selectedNibble to null if value is null; else set it to 4
@@ -61,6 +61,7 @@ namespace HexEditor
         }
 
         private Dictionary<Keys, Action> inputKeyBehavior; // Initialized in the constructor
+        private TrailerByte trailer = new TrailerByte();
 
         /* End Instance Fields */
 
@@ -157,40 +158,6 @@ namespace HexEditor
             this.verticalScroll.Value = e.NewValue;
         }
 
-        private void ByteDataPanel_Paint(object sender, PaintEventArgs e)
-        {
-            int startingLine = (int)Math.Ceiling( (double)verticalScroll.Value / ByteHeight ) - 1;
-            // IE, startingLine is the smallest int `i` such that (i * ByteHeight) + ByteHeight >= Value
-            int endingLine = startingLine + (int)Math.Ceiling( (double)Size.Height / ByteHeight );
-            // IE, endingLine is startingLine plus the largest int `j` such that `j` lines of data fit in the control
-            endingLine = Math.Min(endingLine, LineCount - 1); // Friggin' off-by-one errors related to lines being implicitly zero-indexed
-
-            if (SelectedIndex.HasValue)
-            {
-                const int FUDGE_FACTOR = 3;
-                int drawX = SelectedColumn.Value * (ByteWidth + BYTE_SPACING) + FUDGE_FACTOR;
-                int drawY = (SelectedLine.Value * ByteHeight) - verticalScroll.Value;
-                Point start = new Point(drawX, drawY);
-                Rectangle background = new Rectangle(start, new Size(ByteWidth + FUDGE_FACTOR, ByteHeight));
-
-                e.Graphics.FillRectangle(SELECTED_BACKGROUND, background);
-            }
-
-            for (int i = startingLine; i <= endingLine; i++)
-            {
-                int startIndex = i * BYTES_PER_LINE;
-                int endIndex = startIndex + BYTES_PER_LINE - 1;
-                int drawX = 0;
-                int drawY = (i * ByteHeight) - verticalScroll.Value;
-                var lineData = Data.Skip(startIndex).Take(BYTES_PER_LINE);
-                foreach (byte b in lineData)
-                {
-                    e.Graphics.DrawString(b.ToString("x2"), font, TEXT_BRUSH, drawX, drawY);
-                    drawX += ByteWidth + BYTE_SPACING;
-                }
-            }
-        }
-
         private void verticalScroll_ValueChanged(object sender, EventArgs e)
         {
             Invalidate();
@@ -226,7 +193,7 @@ namespace HexEditor
 
         private void ByteDataPanel_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (selectedNibble.HasValue)
+            if (SelectedIndex.HasValue)
             {
                 char keyChar = Char.ToLower(e.KeyChar);
 
@@ -261,18 +228,94 @@ namespace HexEditor
             e.IsInputKey = inputKeyBehavior.ContainsKey(e.KeyCode);
         }
 
+        private void ByteDataPanel_Paint(object sender, PaintEventArgs e)
+        {
+            int startingLine = (int)Math.Ceiling((double)verticalScroll.Value / ByteHeight) - 1;
+            // IE, startingLine is the smallest int `i` such that (i * ByteHeight) + ByteHeight >= Value
+            int endingLine = startingLine + (int)Math.Ceiling((double)Size.Height / ByteHeight);
+            // IE, endingLine is startingLine plus the largest int `j` such that `j` lines of data fit in the control
+            endingLine = Math.Min(endingLine, LineCount - 1); // Friggin' off-by-one errors related to lines being implicitly zero-indexed
+
+            if (SelectedIndex.HasValue)
+            {
+                PaintSelectedBox(e.Graphics);
+            }
+
+            PaintVisibleBytes(e.Graphics, startingLine, endingLine);
+
+            PaintTrailerByte(e.Graphics);
+        }
+
         /* End Event Handlers */
 
         /* Helper Methods */
 
+        private void PaintTrailerByte(Graphics g)
+        {
+            int trailerColumn = Data.Count % BYTES_PER_LINE;
+            int trailerRow = Data.Count / BYTES_PER_LINE;
+            int drawX = trailerColumn * (BYTE_SPACING + ByteWidth);
+            int drawY = trailerRow * ByteHeight - verticalScroll.Value;
+
+            g.DrawString(trailer.Display, font, TEXT_BRUSH, drawX, drawY);
+        }
+
+
+        private void PaintVisibleBytes(Graphics g, int startingLine, int endingLine)
+        {
+            for (int i = startingLine; i <= endingLine; i++)
+            {
+                int startIndex = i * BYTES_PER_LINE;
+                int endIndex = startIndex + BYTES_PER_LINE - 1;
+                int drawX = 0;
+                int drawY = (i * ByteHeight) - verticalScroll.Value;
+                var lineData = Data.Skip(startIndex).Take(BYTES_PER_LINE);
+                foreach (byte b in lineData)
+                {
+                    g.DrawString(b.ToString("x2"), font, TEXT_BRUSH, drawX, drawY);
+                    drawX += ByteWidth + BYTE_SPACING;
+                }
+            }
+        }
+
+        private void PaintSelectedBox(Graphics g)
+        {
+            const int FUDGE_FACTOR = 3;
+            int drawX = SelectedColumn.Value * (ByteWidth + BYTE_SPACING) + FUDGE_FACTOR;
+            int drawY = (SelectedLine.Value * ByteHeight) - verticalScroll.Value;
+            Point start = new Point(drawX, drawY);
+            Rectangle background = new Rectangle(start, new Size(ByteWidth + FUDGE_FACTOR, ByteHeight));
+
+            g.FillRectangle(SELECTED_BACKGROUND, background);
+        }
+
         private void SetCurrentNibble(int value)
         {
-            int shiftAmount = selectedNibble.Value;
-            int dataMask = 0xf << (4 - shiftAmount);
+            if (0 > value || value > 15)
+            {
+                throw new ArgumentException();
+            }
+
+            if (SelectedIndex < Data.Count)
+            {
+                int shiftAmount = selectedNibble.Value;
+                int dataMask = 0xf << (4 - shiftAmount);
 
 
-            Data[SelectedIndex.Value] = (byte)((Data[SelectedIndex.Value] & dataMask) | (value << shiftAmount));
-            selectedNibble = 4 - selectedNibble;
+                Data[SelectedIndex.Value] = (byte)((Data[SelectedIndex.Value] & dataMask) | (value << shiftAmount));
+                selectedNibble = 4 - selectedNibble; 
+            }
+            else if (trailer.CanAcceptNibble)
+            {
+                trailer.SavedNibble = value;
+            }
+            else
+            {
+                byte newByte = (byte)((trailer.SavedNibble << 4) | value);
+                Data.Add(newByte);
+                trailer.Reset();
+            }
+
             Invalidate();
         }
 

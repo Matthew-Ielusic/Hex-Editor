@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.openButton = new System.Windows.Forms.Button();
             this.resetButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
@@ -59,7 +58,6 @@
             // 
             // saveButton
             // 
-            this.saveButton.Enabled = false;
             this.saveButton.Location = new System.Drawing.Point(51, 223);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(83, 46);
@@ -80,11 +78,11 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Controls";
             // 
-            // byteDataPanel1
+            // byteDataPanel
             // 
             this.byteDataPanel.BackColor = System.Drawing.SystemColors.ControlDark;
             this.byteDataPanel.Location = new System.Drawing.Point(230, 23);
-            this.byteDataPanel.Name = "byteDataPanel1";
+            this.byteDataPanel.Name = "byteDataPanel";
             this.byteDataPanel.Size = new System.Drawing.Size(650, 420);
             this.byteDataPanel.TabIndex = 5;
             // 
