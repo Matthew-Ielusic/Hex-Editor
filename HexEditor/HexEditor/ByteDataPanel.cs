@@ -46,7 +46,7 @@ namespace HexEditor
             get { return _selectedIndex; }
             set
             {
-                if (!value.HasValue || (0 <= value && value <= (Data.Count + 1)))
+                if (!value.HasValue || ValidIndex(value.Value))
                 {
                     _selectedIndex = value;
                     selectedNibble = 4 | (value & 0); // Set selectedNibble to null if value is null; else set it to 4
@@ -170,9 +170,17 @@ namespace HexEditor
             int w = ByteWidth;
             int s = BYTE_SPACING;
             int k = (int)Math.Ceiling((double)(e.X - w) / (s + w));
+            int newIndex = k + 16 * lineIndex;
             if (k <= e.X / (double)(w + s))
             {
-                SelectedIndex = k + 16 * lineIndex;
+                if (ValidIndex(newIndex))
+                {
+                    SelectedIndex = newIndex;
+                }
+                else
+                {
+                    SelectedIndex = null;
+                }
             }
             else
             {
@@ -313,6 +321,7 @@ namespace HexEditor
             {
                 byte newByte = (byte)((trailer.SavedNibble << 4) | value);
                 Data.Add(newByte);
+                SelectedIndex++;
                 trailer.Reset();
             }
 
@@ -364,8 +373,13 @@ namespace HexEditor
 
         private void IncrementSelectedRow()
         {
-            if (SelectedIndex + BYTES_PER_LINE < Data.Count)
+            if (SelectedIndex + BYTES_PER_LINE <= Data.Count)
                 SelectedIndex += BYTES_PER_LINE;
+        }
+
+        private bool ValidIndex(int index)
+        {
+            return 0 <= index && index <= Data.Count;
         }
 
         /* End Helper Methods */
